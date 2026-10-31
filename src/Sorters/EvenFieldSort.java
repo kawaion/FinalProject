@@ -1,26 +1,30 @@
-package Sorting;
+package Sorters;
 
 import java.util.Comparator;
 import java.util.function.ToIntFunction;
 
-public class EvenFieldSort<T> implements SortStrategy<T> {
-    private final SortStrategy<T> strategy;
-    private final ToIntFunction<T> func;
+public class EvenFieldSort<E> implements Sorter<E> {
+    private final Sorter<E> sorter;
+    private final ToIntFunction<E> func;
 
-    public EvenFieldSort(SortStrategy<T> strategy, ToIntFunction<T> func) {
-        this.strategy = strategy;
+    public EvenFieldSort(Sorter<E> sorter, ToIntFunction<E> func) {
+        this.sorter = sorter;
         this.func = func;
     }
 
     @Override
-    public SortableList<T> sort(SortableList<T> list, Comparator<T> comparator){
-        SortableList<T> workList = new SortableList<T>();
+    public CustomList<E> sort(CustomList<E> list, Comparator<E> comparator){
+        CustomList<E> workList = new CustomList<E>();
         for(int i = 0; i < list.size(); i++){
             var el = list.get(i);
             if ((func.applyAsInt(el) & 1) == 0)
                 workList.add(el);
         }
-        workList = strategy.sort(workList, comparator);
+
+        if(workList.size() <= 1)
+            return list;
+
+        workList = sorter.sort(workList, comparator);
         int j = 0;
         for(int i = 0; i < list.size(); i++){
             var el = list.get(i);

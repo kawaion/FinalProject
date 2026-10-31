@@ -1,15 +1,15 @@
-package Sorting;
+package Sorters;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
 
-public class MergeSort<T> implements SortStrategy<T> {
-    private SortableList<T> worklist;
-    private Comparator<T> cmp;
+public class MergeSort<E> implements Sorter<E> {
+    private CustomList<E> worklist;
+    private Comparator<E> cmp;
 
     @Override
-    public SortableList<T> sort(SortableList<T> list, Comparator<T> comparator) {
+    public CustomList<E> sort(CustomList<E> list, Comparator<E> comparator) {
         this.worklist = list;
         this.cmp = comparator;
         sortRange(new ImageSubList(0, list.size()));
@@ -30,7 +30,7 @@ public class MergeSort<T> implements SortStrategy<T> {
 
     private ImageSubList merge(ImageSubList a, ImageSubList b) {
         int na = a.size(), nb = b.size();
-        Deque<T> buf = new ArrayDeque<>(na + nb);
+        Deque<E> buf = new ArrayDeque<>(na + nb);
 
         int i = 0, j = 0;
         while (i < na && j < nb) {
@@ -74,12 +74,12 @@ public class MergeSort<T> implements SortStrategy<T> {
         int right() { return offset + count; }
         int size()  { return count; }
 
-        T get(int i) {
+        E get(int i) {
             if (i < 0 || i >= count) throw new IndexOutOfBoundsException(i);
             return worklist.get(offset + i);
         }
 
-        void set(int i, T v) {
+        void set(int i, E v) {
             if (i < 0 || i >= count) throw new IndexOutOfBoundsException(i);
             worklist.set(offset + i, v);
         }

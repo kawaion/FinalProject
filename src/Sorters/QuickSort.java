@@ -1,13 +1,13 @@
-package Sorting;
+package Sorters;
 
 import java.util.Comparator;
 
-public class QuickSort<T> implements SortStrategy<T> {
-    private Comparator<T> cmp;
-    private SortableList<T> worklist;
+public class QuickSort<E> implements Sorter<E> {
+    private Comparator<E> cmp;
+    private CustomList<E> worklist;
 
     @Override
-    public SortableList<T> sort(SortableList<T> list, Comparator<T> comparator) {
+    public CustomList<E> sort(CustomList<E> list, Comparator<E> comparator) {
         this.cmp = comparator;
         this.worklist = list;
         sortRange(0, list.size());
