@@ -1,5 +1,7 @@
 package Sorters;
 
+import collection.CustomList;
+
 import java.util.Comparator;
 
 public class QuickSort<E> implements Sorter<E> {

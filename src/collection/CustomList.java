@@ -1,9 +1,9 @@
-package org.top.collection;
+package collection;
 
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.top.strategy.Sorter;
+import Sorters.Sorter;
 
 public class CustomList<E> {
     private static final int DEFAULT_CAPACITY = 8;

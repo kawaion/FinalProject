@@ -1,5 +1,7 @@
 package Sorters;
 
+import collection.CustomList;
+
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
