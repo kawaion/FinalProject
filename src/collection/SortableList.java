@@ -8,7 +8,7 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import Sorters.SortStrategy;
+import sorters.SortStrategy;
 
 public class SortableList<E> {
     private static final int DEFAULT_CAPACITY = 8;
