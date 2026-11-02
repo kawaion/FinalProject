@@ -1,16 +1,21 @@
-package org.top.collection;
+package collection;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collector;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import org.top.strategy.Sorter;
+import sorters.SortStrategy;
 
-public class CustomList<E> {
+public class SortableList<E> {
     private static final int DEFAULT_CAPACITY = 8;
     private Object[] objects;
     private int size;      
 
-    public CustomList() {
+    public SortableList() {
         this.init();
     }
 
@@ -104,7 +109,30 @@ public class CustomList<E> {
         Arrays.sort((E[]) objects, 0, this.size, c);
     }
 
-    public void customSort(Sorter<E> sorter, Comparator<E> comparator) {
-        sorter.sort(this, comparator);
+    public void customSort(SortStrategy<E> sortStrategy, Comparator<E> comparator) {
+        sortStrategy.sort(this, comparator);
+    }
+
+    private Spliterator<E> spliterator() {
+        return Spliterators.spliterator((E[]) objects, 0, size,
+                Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED);
+    }
+
+    public Stream<E> stream() {
+        return StreamSupport.stream(spliterator(), false);
+    }
+
+    public static <T> Collector<T, ?, SortableList<T>> toSortableList() {
+        return Collector.of(
+                SortableList::new,
+                SortableList::add,   
+                (left, right) -> {
+                    for (int i = 0; i < right.size(); i++) {
+                        left.add(right.get(i));
+                    }
+                    return left;
+                },
+                Collector.Characteristics.IDENTITY_FINISH 
+        );
     }
 }
