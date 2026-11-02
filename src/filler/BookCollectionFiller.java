@@ -6,15 +6,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import collection.SortableList;
 import model.Book;
 
 public class BookCollectionFiller {
@@ -38,13 +36,13 @@ public class BookCollectionFiller {
 		this.output = output;
 	}
 
-	public List<Book> fillFromFile(String fileName) {
+	public SortableList<Book> fillFromFile(String fileName) {
 		try (Stream<String> lines = Files.lines(Paths.get(fileName), StandardCharsets.UTF_8)) {
 			return lines.filter(line -> !line.trim().isEmpty()).map(this::parseLine).filter(book -> book != null)
-					.limit(size).collect(Collectors.toList());
+					.limit(size).collect(SortableList.toSortableList());
 		} catch (IOException | UncheckedIOException e) {
 			output.accept("Ошибка чтения файла: " + e.getMessage());
-			return new ArrayList<Book>();
+			return new SortableList<Book>();
 		}
 	}
 
@@ -63,7 +61,7 @@ public class BookCollectionFiller {
 		}
 	}
 
-	public List<Book> randomFill() {
+	public SortableList<Book> randomFill() {
 		int maxYear = Year.now().getValue();
 
 		return Stream.generate(() -> {
@@ -74,15 +72,16 @@ public class BookCollectionFiller {
 			int randomYear = rnd.nextInt(1800, maxYear + 1);
 
 			return new Book.Builder().setTitle(randomTitle).setAuthor(randomAuthor).setYear(randomYear).build();
-		}).limit(size).collect(Collectors.toList());
+		}).limit(size).collect(SortableList.toSortableList());
 	}
 
-	public List<Book> fillFromScanner(Scanner scanner) {
+	public SortableList<Book> fillFromScanner(Scanner scanner) {
 		if (scanner == null) {
 			throw new IllegalArgumentException("Scanner не может быть null");
 		}
 
-		return LongStream.rangeClosed(1, size).mapToObj(i -> readBook(scanner, i)).collect(Collectors.toList());
+		return LongStream.rangeClosed(1, size).mapToObj(i -> readBook(scanner, i))
+				.collect(SortableList.toSortableList());
 	}
 
 	private Book readBook(Scanner scanner, long number) {
