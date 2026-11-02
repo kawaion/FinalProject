@@ -1,4 +1,4 @@
-package org.top.collection;
+package collection;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -8,7 +8,7 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.top.strategy.Sorter;
+import Sorters.SortStrategy;
 
 public class SortableList<E> {
     private static final int DEFAULT_CAPACITY = 8;
@@ -109,8 +109,8 @@ public class SortableList<E> {
         Arrays.sort((E[]) objects, 0, this.size, c);
     }
 
-    public void customSort(Sorter<E> sorter, Comparator<E> comparator) {
-        sorter.sort(this, comparator);
+    public void customSort(SortStrategy<E> sortStrategy, Comparator<E> comparator) {
+        sortStrategy.sort(this, comparator);
     }
 
     private Spliterator<E> spliterator() {
