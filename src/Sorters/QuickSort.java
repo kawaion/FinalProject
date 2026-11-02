@@ -1,15 +1,15 @@
 package Sorters;
 
-import collection.CustomList;
+import collection.SortableList;
 
 import java.util.Comparator;
 
-public class QuickSort<E> implements Sorter<E> {
+public class QuickSort<E> implements SortStrategy<E> {
     private Comparator<E> cmp;
-    private CustomList<E> worklist;
+    private SortableList<E> worklist;
 
     @Override
-    public CustomList<E> sort(CustomList<E> list, Comparator<E> comparator) {
+    public SortableList<E> sort(SortableList<E> list, Comparator<E> comparator) {
         this.cmp = comparator;
         this.worklist = list;
         sortRange(0, list.size());

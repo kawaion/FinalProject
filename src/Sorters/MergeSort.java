@@ -1,17 +1,17 @@
 package Sorters;
 
-import collection.CustomList;
+import collection.SortableList;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
 
-public class MergeSort<E> implements Sorter<E> {
-    private CustomList<E> worklist;
+public class MergeSort<E> implements SortStrategy<E> {
+    private SortableList<E> worklist;
     private Comparator<E> cmp;
 
     @Override
-    public CustomList<E> sort(CustomList<E> list, Comparator<E> comparator) {
+    public SortableList<E> sort(SortableList<E> list, Comparator<E> comparator) {
         this.worklist = list;
         this.cmp = comparator;
         sortRange(new ImageSubList(0, list.size()));

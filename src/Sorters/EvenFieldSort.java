@@ -1,22 +1,22 @@
 package Sorters;
 
-import collection.CustomList;
+import collection.SortableList;
 
 import java.util.Comparator;
 import java.util.function.ToIntFunction;
 
-public class EvenFieldSort<E> implements Sorter<E> {
-    private final Sorter<E> sorter;
+public class EvenFieldSort<E> implements SortStrategy<E> {
+    private final SortStrategy<E> sortStrategy;
     private final ToIntFunction<E> func;
 
-    public EvenFieldSort(Sorter<E> sorter, ToIntFunction<E> func) {
-        this.sorter = sorter;
+    public EvenFieldSort(SortStrategy<E> sortStrategy, ToIntFunction<E> func) {
+        this.sortStrategy = sortStrategy;
         this.func = func;
     }
 
     @Override
-    public CustomList<E> sort(CustomList<E> list, Comparator<E> comparator){
-        CustomList<E> workList = new CustomList<E>();
+    public SortableList<E> sort(SortableList<E> list, Comparator<E> comparator){
+        SortableList<E> workList = new SortableList<E>();
         for(int i = 0; i < list.size(); i++){
             var el = list.get(i);
             if ((func.applyAsInt(el) & 1) == 0)
@@ -26,7 +26,7 @@ public class EvenFieldSort<E> implements Sorter<E> {
         if(workList.size() <= 1)
             return list;
 
-        workList = sorter.sort(workList, comparator);
+        workList = sortStrategy.sort(workList, comparator);
         int j = 0;
         for(int i = 0; i < list.size(); i++){
             var el = list.get(i);
