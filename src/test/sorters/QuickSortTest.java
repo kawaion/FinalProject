@@ -11,10 +11,15 @@ class QuickSortTest extends AbstractSortStrategyTest {
         return new QuickSort<>();
     }
 
+    @Override
+    protected SortStrategy<String> createStringSorter() {return new QuickSort<>(); }
+
     @Test
     void threeElementsPermutationKept() {
         var list = listOf(2, 3, 1);
         new QuickSort<Integer>().sort(list, NATURAL);
         assertElements(list, 1, 2, 3);
     }
+
+
 }
