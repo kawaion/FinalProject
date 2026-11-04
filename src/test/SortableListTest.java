@@ -209,7 +209,7 @@ class SortableListTest {
         assertEquals(List.of(0, 1, 2, 3, 100, 4, 5, 6, 7), list.stream().toList());
     }
 
-
+  
 
     @Test
     @DisplayName("remove удаляет первый элемент и возвращает его")
@@ -513,7 +513,7 @@ class SortableListTest {
         assertEquals(List.of(2, 1), list.stream().toList());
     }
 
-
+   
 
     @Test
     @DisplayName("Коллектор toSortableList собирает элементы последовательного потока")
