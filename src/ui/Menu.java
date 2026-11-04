@@ -29,6 +29,7 @@ public class Menu {
             System.out.printf("Здравствуйте, выберите действие: %n" +
                     "1. Заполнить коллекцию %n" +
                     "2. Отсортировать коллекцию %n" +
+                    "3. Подсчитать число вхождений элемента N в коллекции \n" +
                     "0. Закончить работу %n");
             int choice = scanner.nextInt();
             System.out.println();
@@ -77,16 +78,19 @@ public class Menu {
         switch(choice) {
             case 1:
                 collection = filler.fillFromScanner(scanner);
+                System.out.println("Список полученных книг:");
                 System.out.println(collection);
                 return collection;
             case 2:
                 collection = filler.randomFill();
+                System.out.println("Список полученных книг:");
                 System.out.println(collection);
                 return collection;
             case 3:
                 System.out.println("Введите название файла: ");
                 String fileName = scanner.next();
                 collection = filler.fillFromFile(fileName);
+                System.out.println("Список полученных книг:");
                 System.out.println(collection);
                 return collection;
             default:
