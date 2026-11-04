@@ -16,6 +16,9 @@ class MergeSortTest extends AbstractSortStrategyTest {
         return new MergeSort<>();
     }
 
+    @Override
+    protected SortStrategy<String> createStringSorter() {return new MergeSort<>();}
+
     record Item(int key, int id) {}
 
     @Test
