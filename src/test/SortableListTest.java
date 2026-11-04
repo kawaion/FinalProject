@@ -1,6 +1,7 @@
 package test;
 
 import collection.SortableList;
+import model.Book;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import sorters.EvenFieldSort;
@@ -627,5 +628,65 @@ class SortableListTest {
 
         assertEquals(2, list.size());
         assertEquals(List.of("first", "second"), list.stream().toList());
+    }
+
+    private static Book book(String title, String author, int year) {
+        return new Book.Builder()
+                .setTitle(title)
+                .setAuthor(author)
+                .setYear(year)
+                .build();
+    }
+
+    @Test
+    @DisplayName("SortableList хранит книги в порядке добавления")
+    void storesBooksInInsertionOrder() {
+        SortableList<Book> list = new SortableList<>();
+        list.add(book("Война и мир", "Толстой", 1869));
+        list.add(book("Мастер и Маргарита", "Булгаков", 1967));
+
+        assertEquals(2, list.size());
+        assertEquals("Война и мир", list.get(0).getTitle());
+        assertEquals("Булгаков", list.get(1).getAuthor());
+    }
+
+    @Test
+    @DisplayName("sort сортирует книги по году издания")
+    void sortBooksByYear() {
+        SortableList<Book> list = new SortableList<>();
+        list.add(book("Мастер и Маргарита", "Булгаков", 1967));
+        list.add(book("Война и мир", "Толстой", 1869));
+        list.add(book("Евгений Онегин", "Пушкин", 1833));
+
+        list.sort(Comparator.comparingInt(Book::getYear));
+
+        assertEquals(List.of("Евгений Онегин", "Война и мир", "Мастер и Маргарита"),
+                list.stream().map(Book::getTitle).toList());
+    }
+
+    @Test
+    @DisplayName("customSort сортирует книги по автору с помощью MergeSort")
+    void customSortBooksByAuthor() {
+        SortableList<Book> list = new SortableList<>();
+        list.add(book("Война и мир", "Толстой", 1869));
+        list.add(book("Евгений Онегин", "Пушкин", 1833));
+        list.add(book("Мастер и Маргарита", "Булгаков", 1967));
+
+        list.customSort(new MergeSort<>(), Comparator.comparing(Book::getAuthor));
+
+        assertEquals(List.of("Булгаков", "Пушкин", "Толстой"),
+                list.stream().map(Book::getAuthor).toList());
+    }
+
+    @Test
+    @DisplayName("Коллектор toSortableList собирает книги из потока")
+    void collectBooksWithToSortableList() {
+        SortableList<Book> list = Stream.of(
+                        book("Война и мир", "Толстой", 1869),
+                        book("Евгений Онегин", "Пушкин", 1833))
+                .collect(SortableList.toSortableList());
+
+        assertEquals(2, list.size());
+        assertEquals(1833, list.get(1).getYear());
     }
 }
