@@ -31,12 +31,17 @@ public class Menu {
                     "2. Отсортировать коллекцию %n" +
                     "3. Подсчитать число вхождений элемента N в коллекции \n" +
                     "0. Закончить работу %n");
-            int choice = scanner.nextInt();
+            int choice = readInt(scanner);
             System.out.println();
             switch (choice) {
                 case 1:
-                    collection = fillCollection(scanner);
-                    System.out.println("Коллекция заполнена. \n");
+                    SortableList<Book> filled = fillCollection(scanner);
+                    if (filled != null && !filled.isEmpty()) {
+                        collection = filled;
+                        System.out.println("Коллекция заполнена. \n");
+                    } else {
+                        System.out.println("Не удалось заполнить коллекцию. \n");
+                    }
                     break;
                 case 2:
                     assert collection != null;
@@ -65,7 +70,7 @@ public class Menu {
 
     private static SortableList<Book> fillCollection(Scanner scanner) {
         System.out.println("Укажите число элементов: ");
-        int size = scanner.nextInt();
+        int size = readInt(scanner);
         System.out.println();
         SortableList<Book> collection;
         BookCollectionFiller filler = new BookCollectionFiller(size, System.out::println);
@@ -73,25 +78,31 @@ public class Menu {
                 "1. Заполнить вручную %n" +
                 "2. Заполнить случайными значениями %n" +
                 "3. Заполнить из файла %n");
-        int choice = scanner.nextInt();
+        int choice = readInt(scanner);
         System.out.println();
         switch(choice) {
             case 1:
                 collection = filler.fillFromScanner(scanner);
-                System.out.println("Список полученных книг:");
-                System.out.println(collection);
+                if (collection != null && !collection.isEmpty()) {
+                    System.out.println("Список полученных книг:");
+                    System.out.println(collection);
+                }
                 return collection;
             case 2:
                 collection = filler.randomFill();
-                System.out.println("Список полученных книг:");
-                System.out.println(collection);
+                if (collection != null && !collection.isEmpty()) {
+                    System.out.println("Список полученных книг:");
+                    System.out.println(collection);
+                }
                 return collection;
             case 3:
                 System.out.println("Введите название файла: ");
-                String fileName = scanner.next();
+                String fileName = scanner.nextLine().trim();
                 collection = filler.fillFromFile(fileName);
-                System.out.println("Список полученных книг:");
-                System.out.println(collection);
+                if (collection != null && !collection.isEmpty()) {
+                    System.out.println("Список полученных книг:");
+                    System.out.println(collection);
+                }
                 return collection;
             default:
                 return null;
@@ -102,7 +113,7 @@ public class Menu {
         System.out.println("Тип сортировки:");
         System.out.println("1. Обычная сортировка");
         System.out.println("2. Сортировка только чётных значений");
-        int modeChoice = scanner.nextInt();
+        int modeChoice = readInt(scanner);
 
         boolean evenOnly;
         switch (modeChoice) {
@@ -114,7 +125,7 @@ public class Menu {
         System.out.println("Выберите метод сортировки:");
         System.out.println("1. Быстрая сортировка");
         System.out.println("2. Сортировка слиянием");
-        int methodChoice = scanner.nextInt();
+        int methodChoice = readInt(scanner);
 
         SortStrategy<Book> baseStrategy = switch (methodChoice) {
             case 1 -> new QuickSort<>();
@@ -131,7 +142,7 @@ public class Menu {
             System.out.println("1. названию");
             System.out.println("2. автору");
             System.out.println("3. году");
-            int fieldChoice = scanner.nextInt();
+            int fieldChoice = readInt(scanner);
 
             cmp = switch (fieldChoice) {
                 case 1 -> Comparator.comparing(Book::getTitle);
@@ -154,8 +165,7 @@ public class Menu {
                 1. да\s
                 0. нет
                 """);
-        int saveChoice = scanner.nextInt();
-        scanner.nextLine();
+        int saveChoice = readInt(scanner);
 
         if (saveChoice == 1) {
             try {
@@ -184,7 +194,6 @@ public class Menu {
 
     private static void countOccurrencesMultithreaded(SortableList<Book> collection, Scanner scanner) {
         System.out.println("Введите данные книги для поиска:");
-        scanner.nextLine();
 
         System.out.print("Название: ");
         String title = scanner.nextLine().trim();
@@ -193,7 +202,7 @@ public class Menu {
         String author = scanner.nextLine().trim();
 
         System.out.print("Год издания: ");
-        int year = scanner.nextInt();
+        int year = readInt(scanner);
         System.out.println();
 
         final int threadsCount = 2;
@@ -237,6 +246,17 @@ public class Menu {
             Thread.currentThread().interrupt();
         } finally {
             executor.shutdown();
+        }
+    }
+
+    private static int readInt(Scanner scanner) {
+        while (true) {
+            String line = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(line);
+            } catch (NumberFormatException e) {
+                System.out.println("Некорректное число, повторите ввод");
+            }
         }
     }
 }
