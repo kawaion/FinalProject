@@ -13,7 +13,7 @@ import sorters.SortStrategy;
 public class SortableList<E> {
     private static final int DEFAULT_CAPACITY = 8;
     private Object[] objects;
-    private int size;      
+    private int size;
 
     public SortableList() {
         this.init();
@@ -89,7 +89,7 @@ public class SortableList<E> {
     public void add(int index, E element) {
         this.checkIndexAdd(index);
         ensureCapacity(size + 1);
-        System.arraycopy(objects, index, objects, index + 1, size - index);        
+        System.arraycopy(objects, index, objects, index + 1, size - index);
         size++;
         objects[index] = element;
     }
@@ -109,8 +109,8 @@ public class SortableList<E> {
         Arrays.sort((E[]) objects, 0, this.size, c);
     }
 
-    public void customSort(SortStrategy<E> sortStrategy, Comparator<E> comparator) {
-        sortStrategy.sort(this, comparator);
+    public SortableList<E> customSort(SortStrategy<E> sortStrategy, Comparator<E> comparator) {
+        return sortStrategy.sort(this, comparator);
     }
 
     private Spliterator<E> spliterator() {
@@ -125,14 +125,23 @@ public class SortableList<E> {
     public static <T> Collector<T, ?, SortableList<T>> toSortableList() {
         return Collector.of(
                 SortableList::new,
-                SortableList::add,   
+                SortableList::add,
                 (left, right) -> {
                     for (int i = 0; i < right.size(); i++) {
                         left.add(right.get(i));
                     }
                     return left;
                 },
-                Collector.Characteristics.IDENTITY_FINISH 
+                Collector.Characteristics.IDENTITY_FINISH
         );
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            sb.append(objects[i]).append('\n');
+        }
+        return sb.toString();
     }
 }
