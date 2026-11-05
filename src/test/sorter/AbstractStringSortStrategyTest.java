@@ -76,7 +76,6 @@ abstract class AbstractStringSortStrategyTest {
 
     @Test
     void stringMixedCaseAlphabetical() {
-        // регистронезависимый порядок: Apple → apricot → banana → cherry
         assertStrings(
                 createStringSorter().sort(
                         listOfStrings("banana", "Apple", "cherry", "apricot"), ALPHABETICAL),
