@@ -247,6 +247,34 @@ public class Menu {
         } finally {
             executor.shutdown();
         }
+        System.out.print("""
+                Сохранить результаты поиска в файл?\s
+                1. да\s
+                0. нет
+                """);
+        int saveChoice = scanner.nextInt();
+        scanner.nextLine();
+        if (saveChoice == 1) {
+            try {
+                saveSearchResultsToFile(title, author, year, totalOccurrences);
+                System.out.println("Результаты успешно записаны в файл \n");
+            } catch (IOException e) {
+                System.out.println("Ошибка при записи в файл: " + e.getMessage() + "\n");
+            }
+        }
+    }
+
+    private static void saveSearchResultsToFile(String title, String author,
+                                                int year, int occurrences) throws IOException{
+        Path path = Path.of("results.txt");
+        try (PrintWriter writer = new PrintWriter(
+                Files.newBufferedWriter(path,
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.APPEND))) {
+            writer.println("Результаты поиска по книге: ");
+            writer.printf("Книга \"%s\" (автор: %s, год: %d) встречается в коллекции %d раз(а).%n%n",
+                    title, author, year, occurrences);
+        }
     }
 
     private static int readInt(Scanner scanner) {

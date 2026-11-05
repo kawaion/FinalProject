@@ -88,6 +88,7 @@ public class BookCollectionFiller {
 		while (true) {
 			output.accept("Книга " + number + " из " + size + ":");
 
+			scanner.nextLine();
 			String title = readNonEmpty(scanner, "Название: ");
 			String author = readNonEmpty(scanner, "Автор: ");
 			int year = readYear(scanner);
