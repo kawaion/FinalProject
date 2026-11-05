@@ -4,10 +4,10 @@ import collection.SortableList;
 import model.Book;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import sorters.EvenFieldSort;
-import sorters.MergeSort;
-import sorters.QuickSort;
-import sorters.SortStrategy;
+import sorter.EvenFieldSort;
+import sorter.MergeSort;
+import sorter.QuickSort;
+import sorter.SortStrategy;
 
 import java.util.Comparator;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package sorters;
+package sorter;
 
 import collection.SortableList;
 

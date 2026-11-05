@@ -1,8 +1,8 @@
-package test.sorters;
+package test.sorter;
 
 import org.junit.jupiter.api.Test;
-import sorters.QuickSort;
-import sorters.SortStrategy;
+import sorter.QuickSort;
+import sorter.SortStrategy;
 
 class QuickSortTest extends AbstractSortStrategyTest {
 

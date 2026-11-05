@@ -1,9 +1,9 @@
-package test.sorters;
+package test.sorter;
 
 import collection.SortableList;
 import org.junit.jupiter.api.Test;
-import sorters.MergeSort;
-import sorters.SortStrategy;
+import sorter.MergeSort;
+import sorter.SortStrategy;
 
 import java.util.Comparator;
 

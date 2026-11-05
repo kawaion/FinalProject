@@ -1,11 +1,11 @@
-package test.sorters;
+package test.sorter;
 
 import collection.SortableList;
 import org.junit.jupiter.api.Test;
-import sorters.EvenFieldSort;
-import sorters.MergeSort;
-import sorters.QuickSort;
-import sorters.SortStrategy;
+import sorter.EvenFieldSort;
+import sorter.MergeSort;
+import sorter.QuickSort;
+import sorter.SortStrategy;
 
 import java.util.Comparator;
 

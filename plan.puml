@@ -1,0 +1,386 @@
+@startuml
+skinparam packageStyle rectangle
+left to right direction
+
+package "ui" as ui
+package "filler" as filler
+package "sorter" as sorter
+package "collection" as collection
+package "model" as model
+package "validation" as validation
+package "test (src/test)" as test
+
+ui --> filler
+ui --> sorter
+ui --> collection
+ui --> model
+
+filler --> collection
+filler --> model
+
+collection --> sorter : <<use>> SortStrategy
+model --> validation : <<use>> BookValidator
+
+test ..> ui
+test ..> filler
+test ..> sorter
+test ..> collection
+test ..> model
+test ..> validation
+
+@enduml
+
+
+
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "collection" {
+  class SortableList<E> {
+    - {static} DEFAULT_CAPACITY: int = 8
+    - objects: Object[]
+    - size: int
+    + SortableList()
+    + size(): int
+    + isEmpty(): boolean
+    + add(e: E): boolean
+    + add(index: int, element: E): void
+    + get(index: int): E
+    + set(index: int, element: E): E
+    + remove(index: int): E
+    + clear(): void
+    + sort(c: Comparator<? super E>): void
+    + customSort(strategy: SortStrategy<E>, comparator: Comparator<E>): SortableList<E>
+    + stream(): Stream<E>
+    + {static} toSortableList<T>(): Collector<T, ?, SortableList<T>>
+    + toString(): String
+    - ensureCapacity(requiredCapacity: int): boolean
+    - grow(minCapacity: int): void
+    - checkIndex(index: int): void
+    - checkIndexAdd(index: int): void
+    - spliterator(): Spliterator<E>
+    - init(): void
+  }
+}
+
+package "model" {
+  class Book {
+    - title: String
+    - author: String
+    - year: int
+    - Book(title: String, author: String, year: int)
+    + getTitle(): String
+    + getAuthor(): String
+    + getYear(): int
+    + equals(o: Object): boolean
+    + hashCode(): int
+    + toString(): String
+  }
+  class "Book.Builder" as BookBuilder {
+    - title: String
+    - author: String
+    - year: int
+    + setTitle(title: String): Builder
+    + setAuthor(author: String): Builder
+    + setYear(year: int): Builder
+    + build(): Book
+  }
+}
+
+package "validation" {
+  class BookValidator {
+    + {static} validate(title: String, author: String, year: int): boolean
+  }
+}
+
+Book +-- BookBuilder
+BookBuilder ..> BookValidator : <<use>>
+BookBuilder ..> Book : build()
+SortableList ..> "sorter.SortStrategy" : <<use>>\ncustomSort()
+
+note right of BookValidator
+  Проверка:
+  1564 ≤ year ≤ 2026,
+  title/author не пустые
+end note
+
+@enduml
+
+
+
+
+
+
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+
+interface SortStrategy<E> {
+  + sort(list: SortableList<E>, comparator: Comparator<E>): SortableList<E>
+}
+
+class QuickSort<E> {
+  - cmp: Comparator<E>
+  - worklist: SortableList<E>
+  + sort(list, comparator): SortableList<E>
+  - sortRange(lo: int, hi: int): void
+  - partition(lo: int, hi: int): int
+  - swap(i: int, j: int): void
+}
+
+class MergeSort<E> {
+  - worklist: SortableList<E>
+  - cmp: Comparator<E>
+  + sort(list, comparator): SortableList<E>
+  - sortRange(range: ImageSubList): ImageSubList
+  - merge(a: ImageSubList, b: ImageSubList): ImageSubList
+}
+
+class "MergeSort.ImageSubList" as ImageSubList {
+  - offset: int
+  - count: int
+  - ImageSubList(from: int, to: int)
+  - left(): int
+  - right(): int
+  - size(): int
+  - get(i: int): E
+  - set(i: int, v: E): void
+}
+
+class EvenFieldSort<E> {
+  - sortStrategy: SortStrategy<E>
+  - func: ToIntFunction<E>
+  + EvenFieldSort(sortStrategy, func)
+  + sort(list, comparator): SortableList<E>
+  - extractEvenFieldElements(list, func): EvenSplit<E>
+  - writeBackInPlace(list, indexList, workList): SortableList<E>
+}
+
+class "EvenFieldSort.EvenSplit" as EvenSplit {
+  - indexList: SortableList<Integer>
+  - workList: SortableList<E>
+}
+
+SortStrategy <|.. QuickSort
+SortStrategy <|.. MergeSort
+SortStrategy <|.. EvenFieldSort
+EvenFieldSort o--> SortStrategy : делегирует
+MergeSort +-- ImageSubList
+EvenFieldSort +-- EvenSplit
+
+note bottom of EvenFieldSort
+  Сортирует только элементы
+  с чётным значением func.
+  Остальные остаются на местах.
+end note
+
+@enduml
+
+
+
+
+
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+left to right direction
+
+class Main {
+  + {static} main(args: String[]): void
+}
+
+package "ui" {
+  class Menu {
+    + {static} run(scanner: Scanner): void
+    - {static} fillCollection(scanner): SortableList<Book>
+    - {static} sortCollection(collection, scanner): SortableList<Book>
+    - {static} saveCollectionToFile(collection): void
+    - {static} countOccurrencesMultithreaded(collection, scanner): void
+    - {static} readInt(scanner): int
+  }
+}
+
+package "filler" {
+  class BookCollectionFiller {
+    - size: long
+    - output: Consumer<String>
+    - {static} SAMPLE_TITLES: String[]
+    - {static} SAMPLE_AUTHORS: String[]
+    + BookCollectionFiller(size: long, output: Consumer<String>)
+    + fillFromFile(fileName: String): SortableList<Book>
+    + randomFill(): SortableList<Book>
+    + fillFromScanner(scanner: Scanner): SortableList<Book>
+    - parseLine(line: String): Book
+    - readBook(scanner, number: long): Book
+    - readNonEmpty(scanner, prompt: String): String
+    - readYear(scanner): int
+  }
+}
+
+Main ..> Menu : <<use>>
+Menu ..> BookCollectionFiller : <<create>>
+Menu ..> SortableList : <<create>>
+Menu ..> "sorter.SortStrategy" : <<use>>
+Menu ..> "sorter.QuickSort" : <<create>>
+Menu ..> "sorter.MergeSort" : <<create>>
+Menu ..> "sorter.EvenFieldSort" : <<create>>
+BookCollectionFiller ..> SortableList : <<create>>
+BookCollectionFiller ..> Book : <<create>>
+
+@enduml
+
+
+
+
+
+
+@startuml
+actor User
+participant "Menu" as M
+participant "BookCollectionFiller" as F
+participant "Scanner" as S
+participant "Book.Builder" as B
+participant "BookValidator" as V
+participant "SortableList<Book>" as L
+
+User -> M : 1. Заполнить коллекцию
+M -> User : размер и способ
+M -> F : new BookCollectionFiller(size, output)
+
+alt Вручную
+  M -> F : fillFromScanner(scanner)
+  loop size раз
+    F -> S : nextLine()
+    S --> F : title / author / year
+    F -> B : setTitle/setAuthor/setYear
+    B -> V : validate(...)
+    V --> B : ok/fail
+    B --> F : Book
+    alt невалидно
+      F -> User : сообщение об ошибке\nи повтор ввода
+    end
+  end
+else Случайно
+  M -> F : randomFill()
+  F -> F : Stream.generate(...).limit(size)
+else Из файла
+  M -> F : fillFromFile(fileName)
+  F -> F : Files.lines(...)\nfilter/map/parseLine
+  F -> B : build()
+  B -> V : validate
+end
+
+F -> L : collect(SortableList.toSortableList())
+L --> F : SortableList<Book>
+F --> M : SortableList<Book>
+M -> User : печать коллекции
+@enduml
+
+
+
+
+
+
+@startuml
+actor User
+participant "Menu" as M
+participant "SortableList" as L
+participant "SortStrategy" as ST
+participant "EvenFieldSort" as EFS
+participant "MergeSort or QuickSort" as S
+
+User -> M : 2. Отсортировать
+M -> User : тип / метод / поле
+M -> M : baseStrategy = new QuickSort or MergeSort\nstrategy = evenOnly ? new EvenFieldSort(...) : baseStrategy
+
+M -> L : customSort(strategy, cmp)
+L -> ST : sort(this, cmp)
+
+alt Обычная сортировка
+  ST -> S : sort(list, cmp)
+  S -> L : get/set по индексам
+  S --> ST : list
+else Только чётные значения
+  ST -> EFS : sort(list, cmp)
+  EFS -> EFS : extractEvenFieldElements(list, func)\n(чётные year -> workList + indexList)
+  EFS -> S : sort(workList, cmp)
+  S --> EFS : workList
+  EFS -> L : writeBackInPlace(list, indexList, workList)
+  EFS --> ST : list
+end
+
+ST --> L : list
+L --> M : list
+M -> User : печать результата
+opt сохранение
+  M -> M : saveCollectionToFile()
+  note right: APPEND в results.txt
+end
+@enduml
+
+
+
+
+
+@startuml
+actor User
+participant "Menu" as M
+participant "ExecutorService\n(2 потока)" as EX
+participant "SortableList" as L
+
+User -> M : 3. Подсчитать вхождения
+M -> User : title, author, year
+
+M -> EX : submit(task_1, start..mid)
+M -> EX : submit(task_2, mid..end)
+
+par worker 1
+  EX -> L : get(j) для j от start до mid
+  L --> EX : Book
+  EX -> EX : сравнение с искомой книгой
+else worker 2
+  EX -> L : get(j) для j от mid до end
+  L --> EX : Book
+  EX -> EX : сравнение с искомой книгой
+end
+
+M -> EX : Future.get() для каждого
+EX --> M : count_1, count_2
+M -> User : total = count_1 + count_2
+M -> EX : shutdown()
+@enduml
+
+
+
+
+@startuml
+package "src/test" {
+  class "Test: SortableList" as T1
+  class "Test: Book / Builder / Validator" as T2
+  class "Test: BookCollectionFiller" as T3
+  class "Test: MergeSort / QuickSort / EvenFieldSort" as T4
+  class "Test: Menu (интеграционные)" as T5
+}
+
+package "src/main" {
+  class SortableList
+  class Book
+  class BookValidator
+  class BookCollectionFiller
+  class MergeSort
+  class QuickSort
+  class EvenFieldSort
+  class Menu
+}
+
+T1 ..> SortableList
+T2 ..> Book
+T2 ..> BookValidator
+T3 ..> BookCollectionFiller
+T3 ..> SortableList
+T4 ..> MergeSort
+T4 ..> QuickSort
+T4 ..> EvenFieldSort
+T5 ..> Menu
+@enduml

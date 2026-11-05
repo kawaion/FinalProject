@@ -3,10 +3,10 @@ package ui;
 import collection.SortableList;
 import filler.BookCollectionFiller;
 import model.Book;
-import sorters.EvenFieldSort;
-import sorters.MergeSort;
-import sorters.QuickSort;
-import sorters.SortStrategy;
+import sorter.EvenFieldSort;
+import sorter.MergeSort;
+import sorter.QuickSort;
+import sorter.SortStrategy;
 
 import java.io.IOException;
 import java.io.PrintWriter;
