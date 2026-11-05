@@ -20,6 +20,4 @@ class QuickSortTest extends AbstractSortStrategyTest {
         new QuickSort<Integer>().sort(list, NATURAL);
         assertElements(list, 1, 2, 3);
     }
-
-
 }

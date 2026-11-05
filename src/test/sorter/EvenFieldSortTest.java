@@ -143,7 +143,6 @@ class EvenFieldSortTest {
 
     @Test
     void customFieldFunctionWithOffset() {
-        // x + 1 → «чётно» там, где x нечётный
         var sorter = new EvenFieldSort<Integer>(new MergeSort<>(), x -> x + 1);
         assertElements(sorter.sort(listOf(3, 4, 1, 2), NATURAL), 1, 4, 3, 2);
     }
